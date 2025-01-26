@@ -1,48 +1,132 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const totalImages = 20;
+    const gameContainer = document.querySelector(".game");
+    const startButton = document.querySelector("button:nth-of-type(4)");
+    const resetButton = document.querySelector("button:nth-of-type(5)");
+    const easyButton = document.getElementById("easy-btn");
+    const mediumButton = document.getElementById("medium-btn");
+    const hardButton = document.getElementById("hard-btn");
+    let gameCards = [];
+    let firstCard, secondCard;
+    let lockBoard = false;
 
-//Create list
-const methods = [
-    "concat()", "copyWithin()", "entries()", "every()", "fill()", "filter()",
-    "find()", "findIndex()", "findLast()", "findLastIndex()", "flat()",
-    "flatMap()", "forEach()", "from()", "includes()", "indexOf()", "isArray()",
-    "join()", "keys()", "lastIndexOf()", "map()", "of()", "pop()", "push()",
-    "reduce()", "at()", "reduceRight()", "reverse()", "shift()", "slice()", "some()",
-    "sort()", "splice()", "toLocaleString()", "toString()", "unshift()", "values()"
-];
+    // Generate the array with the images
+    function generateImageArray() {
+        const images = [];
+        for (let i = 1; i <= totalImages; i++) {
+            images.push(`fruit-${i}.png`);
+        }
+        return images;
+    }
 
-methods.sort();
+    // Set up the game
+    function generateGame(level = "easy") {
+        const images = generateImageArray();
+        let pairCount;
 
-const list = document.getElementById('methods-list');
+        if (level === "easy") pairCount = 8;
+        if (level === "medium") pairCount = 12;
+        if (level === "hard") pairCount = 20;
+
+        const selectedImages = images.slice(0, pairCount);
+        gameCards = [...selectedImages, ...selectedImages];
+
+        // Shuffle the cards
+        gameCards = shuffleArray(gameCards);
+
+        // Clear previous game
+        gameContainer.innerHTML = "";
+        const columns = Math.ceil(Math.sqrt(gameCards.length));
+        gameContainer.style.gridTemplateColumns = `repeat(${columns}, auto)`;
 
 
-methods.forEach(method => {
-    const listItem = document.createElement('li');
-    listItem.textContent = method;
+        // Create cards
+        gameCards.forEach((image) => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.dataset.image = image;
 
-    const button = document.createElement("button");
-    button.textContent = "Show";
-    listItem.appendChild(button);
-    list.appendChild(listItem);
+            card.innerHTML = `
+                <div class="front"></div>
+                <div class="back">
+                    <img src="./images/${image}" alt="${image}">
+                </div>`;
+            card.addEventListener("click", flipCard);
+            gameContainer.appendChild(card);
+        });
+    }
+
+    // Flip the cards
+    function flipCard() {
+        if (lockBoard || this === firstCard) return;
+        this.classList.add("flipped");
+
+        if (!firstCard) {
+            firstCard = this;
+            return;
+        }
+
+        secondCard = this;
+        checkMatch();
+    }
+
+    // Check if the two cards match
+    function checkMatch() {
+        const isMatch = firstCard.dataset.image === secondCard.dataset.image;
+
+        isMatch ? disableCards() : unflipCards();
+    }
+
+    function disableCards() {
+        firstCard.removeEventListener("click", flipCard);
+        secondCard.removeEventListener("click", flipCard);
+        resetBoard();
+    }
+
+    function unflipCards() {
+        lockBoard = true;
+        setTimeout(() => {
+            firstCard.classList.remove("flipped");
+            secondCard.classList.remove("flipped");
+            resetBoard();
+        }, 1000);
+    }
+
+    function resetBoard() {
+        [firstCard, secondCard, lockBoard] = [null, null, false];
+    }
+
+    // Shuffle the array
+    function shuffleArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    // Event listeners for difficulty buttons
+    easyButton.addEventListener("click", () => {
+        generateGame("easy");
+    });
+
+    mediumButton.addEventListener("click", () => {
+        generateGame("medium");
+    });
+
+    hardButton.addEventListener("click", () => {
+        generateGame("hard");
+    });
+
+    // Add reset functionality
+    resetButton.addEventListener("click", () => {
+        gameContainer.innerHTML = "<p>Press Start to Play!</p>";
+        firstCard = secondCard = null; // Reset board state
+        startButton.classList.remove("hidden");
+    });
+
+    // Add start functionality
+    startButton.addEventListener("click", () => {
+        generateGame();
+        startButton.classList.add("hidden");
+    });
+
+    // Initial message
+    gameContainer.innerHTML = "<p>Press Start to Play!</p>";
 });
-
-//Convert title to uppercase
-const titleElement = document.getElementById('title');
-titleElement.textContent = titleElement.textContent.toUpperCase();
-
-// Replace fruit names in the paragraph with corresponding images
-const fruitsText = document.getElementById("fruits-text");
-
-const fruitImages = {
-    apple: "./images/apple.png",
-    orange: "./images/orange.jpg",
-    strawberry: "./images/strawberry.png",
-    banana: "./images/banana.webp"
-};
-let content = "const fruits = [";
-
-Object.keys(fruitImages).forEach(fruit => {
-    content += `<img src="${fruitImages[fruit]}" alt="${fruit}" style="width:30px; height:30px; margin-right:5px;">`;
-});
-
-content += "]";
-fruitsText.innerHTML = content;
-
