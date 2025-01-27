@@ -8,20 +8,11 @@ html {
 
 * {
     box-sizing: border-box;
-}
-
-.content-container {
-    background-color: rgb(202, 231, 231);
-    margin: auto;
-    width: 60%;
-    margin-top: 20px;
-    padding: 10px;
-    border: 5px solid green;
-}
-
-.inner-border {
-    border: dotted rgb(134, 241, 134);
-    padding: 15px;
+    cursor: url("/Fruit-Game/images/Fruit\ punch.cur"), auto;
+    font-family: "Delius Unicase", serif;
+    font-style: normal;
+    text-transform: uppercase;
+    text-align: center;
 }
 
 .background-img {
@@ -39,12 +30,18 @@ html {
     -webkit-filter: blur(8px);
 }
 
-* {
-    cursor: url("/Fruit-Game/images/Fruit\ punch.cur"), auto;
-    font-family: "Delius Unicase", serif;
-    font-style: normal;
-    text-transform: uppercase;
-    text-align: center;
+.content-container {
+    background-color: rgb(202, 231, 231);
+    margin: auto;
+    width: 60%;
+    margin-top: 20px;
+    padding: 10px;
+    border: 5px solid green;
+}
+
+.inner-border {
+    border: dotted rgb(134, 241, 134);
+    padding: 15px;
 }
 
 .game {
@@ -116,7 +113,6 @@ button {
     -webkit-user-select: none;
     touch-action: manipulation;
     margin: 10px;
-
 }
 
 button:hover {
