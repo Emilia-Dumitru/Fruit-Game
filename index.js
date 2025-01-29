@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     const totalImages = 20;
     const gameContainer = document.querySelector(".game");
-    const startButton = document.querySelector("button:nth-of-type(4)");
-    const resetButton = document.querySelector("button:nth-of-type(5)");
+    const startButton = document.getElementById("start-btn");
+    const resetButton = document.getElementById("reset-btn");
     const easyButton = document.getElementById("easy-btn");
     const mediumButton = document.getElementById("medium-btn");
     const hardButton = document.getElementById("hard-btn");
     let gameCards = [];
     let firstCard, secondCard;
     let lockBoard = false;
+    let gameStarted = false;
+    let selectedDifficulty = null;
 
     // Generate the array with the images
     function generateImageArray() {
@@ -20,25 +22,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Set up the game
-    function generateGame(level = "easy") {
+    function generateGame(level) {
+        selectedDifficulty = level;
+        gameStarted = false;
+        gameContainer.innerHTML = "";
+
         const images = generateImageArray();
-        let pairCount;
-
-        if (level === "easy") pairCount = 8;
-        if (level === "medium") pairCount = 12;
-        if (level === "hard") pairCount = 20;
-
+        let pairCount = level === "easy" ? 8 : level === "medium" ? 12 : 20;
         const selectedImages = images.slice(0, pairCount);
         gameCards = [...selectedImages, ...selectedImages];
 
         // Shuffle the cards
         gameCards = shuffleArray(gameCards);
-
-        // Clear previous game
-        gameContainer.innerHTML = "";
-        const columns = Math.ceil(Math.sqrt(gameCards.length));
-        gameContainer.style.gridTemplateColumns = `repeat(${columns}, auto)`;
-
 
         // Create cards
         gameCards.forEach((image) => {
@@ -52,13 +47,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     <img src="./images/${image}" alt="${image}">
                 </div>`;
             card.addEventListener("click", flipCard);
+            card.style.pointerEvents = "none";
             gameContainer.appendChild(card);
         });
+
+        gameContainer.insertAdjacentHTML("beforeend", '<p class="start-msg">Press Start to Begin!</p>');
+    }
+
+    function startGame() {
+        if (!selectedDifficulty) {
+            alert("Please select a difficulty level first!");
+            return;
+        }
+
+        gameStarted = true;
+        document.querySelectorAll(".card").forEach(card => {
+            card.style.pointerEvents = "auto";
+        });
+
+        gameContainer.querySelector("p")?.remove();
     }
 
     // Flip the cards
     function flipCard() {
-        if (lockBoard || this === firstCard) return;
+        if (!gameStarted || lockBoard || this === firstCard) return;
         this.classList.add("flipped");
 
         if (!firstCard) {
@@ -73,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if the two cards match
     function checkMatch() {
         const isMatch = firstCard.dataset.image === secondCard.dataset.image;
-
         isMatch ? disableCards() : unflipCards();
     }
 
@@ -102,31 +113,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Event listeners for difficulty buttons
-    easyButton.addEventListener("click", () => {
-        generateGame("easy");
-    });
+    easyButton.addEventListener("click", () => generateGame("easy"));
+    mediumButton.addEventListener("click", () => generateGame("medium"));
+    hardButton.addEventListener("click", () => generateGame("hard"));
 
-    mediumButton.addEventListener("click", () => {
-        generateGame("medium");
-    });
-
-    hardButton.addEventListener("click", () => {
-        generateGame("hard");
-    });
+    startButton.addEventListener("click", startGame);
 
     // Add reset functionality
     resetButton.addEventListener("click", () => {
-        gameContainer.innerHTML = "<p>Press Start to Play!</p>";
+        gameContainer.innerHTML = "<p>Pick Your Difficulty and Start the Adventure!</p>";
         firstCard = secondCard = null; // Reset board state
-        startButton.classList.remove("hidden");
-    });
-
-    // Add start functionality
-    startButton.addEventListener("click", () => {
-        generateGame();
-        startButton.classList.add("hidden");
+        selectedDifficulty = null;
+        gameStarted = false;
     });
 
     // Initial message
-    gameContainer.innerHTML = "<p>Press Start to Play!</p>";
+    gameContainer.innerHTML = "<p>Pick Your Difficulty and Start the Adventure!</p>";
 });
