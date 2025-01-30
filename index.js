@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const easyButton = document.getElementById("easy-btn");
     const mediumButton = document.getElementById("medium-btn");
     const hardButton = document.getElementById("hard-btn");
+    const winPopup = document.getElementById("win-popup");
+    const closePopupBtn = document.getElementById("close-popup-btn");
     let gameCards = [];
     let firstCard, secondCard;
     let lockBoard = false;
@@ -89,9 +91,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function disableCards() {
+        firstCard.classList.add("matched");
+        secondCard.classList.add("matched");
+
         firstCard.removeEventListener("click", flipCard);
         secondCard.removeEventListener("click", flipCard);
+
         resetBoard();
+        checkWin();
     }
 
     function unflipCards() {
@@ -129,4 +136,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initial message
     gameContainer.innerHTML = "<p>Pick Your Difficulty and Start the Adventure!</p>";
+
+    //Check if the player found all the pairs
+    function checkWin() {
+        console.log("Checking win condition...");
+        console.log("Matched cards:", document.querySelectorAll(".card.matched").length);
+        console.log("Total game cards:", gameCards.length);
+
+        if (document.querySelectorAll(".card.matched").length === gameCards.length) {
+            console.log("🎉 WIN DETECTED!");
+            winPopup.style.display = "flex";
+        }
+    }
+
+    closePopupBtn.addEventListener("click", () => {
+        winPopup.style.display = "none";
+        gameContainer.innerHTML = "<p>Pick Your Difficulty and Start the Adventure!</p>";
+        selectedDifficulty = null;
+    });
 });
