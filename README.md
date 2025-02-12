@@ -5,8 +5,8 @@ Fruit Hunt is a memory game where players can test their memory skills by matchi
 Description
 This project is a simple memory game built with HTML, CSS, and JavaScript. The goal of the game is to encourage players to improve their memory by quickly matching pairs of fruit images.
 
-Features
-Choose your difficulty: Easy, Medium, or Hard.
+## Features
+- **Choose your difficulty:** Easy, Medium, or Hard.
 Start a new game: You can start a new game once you've finished or reset the current game.
 Reset game: You can reset the game at any time.
 Win the game: When all the pairs are found, a pop-up window will appear to congratulate the player.
